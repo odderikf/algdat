@@ -1,1 +1,8 @@
 */cmake-build-debug/
+*/cmake/
+*/__pycache__/
+*.gch
+*.o
+*.idea
+dump/
+
