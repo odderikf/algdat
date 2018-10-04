@@ -1,6 +1,6 @@
 #include <iostream>
 #include <boost/date_time.hpp>
-#include "../mylib/timeit.cpp"
+#include "../mylib/timeit.hpp"
 
 std::vector<long> nsquared(std::vector<double>& changes){
     double value = 0; //{
