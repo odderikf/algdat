@@ -27,5 +27,6 @@ namespace my {
         }
     }
 
+#include "heap_impl.hpp"
 }
 #endif
