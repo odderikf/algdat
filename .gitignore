@@ -1,8 +1,15 @@
+# build artifacts
 */cmake-build-debug/
 */cmake/
 */__pycache__/
 *.gch
 *.o
+
+# ide artifacts
 *.idea
+
+# non-content
 dump/
 
+#privacy reasons
+oving5/names.txt
