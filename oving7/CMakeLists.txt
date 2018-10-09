@@ -1,1 +1,1 @@
-add_executable(cpp.out main.cpp)
+add_executable(oving7.out main.cpp)

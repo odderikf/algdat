@@ -5,7 +5,7 @@
 #include <set>
 #include <stack>
 #include <algorithm>
-
+#include <boost/date_time.hpp>
 
 typedef std::vector<std::set<unsigned long>> Graph;
 
@@ -129,10 +129,24 @@ int main(int argc, char* argv[]) {
     std::vector<std::set<unsigned long>> vertices_r;
     unsigned long vertice_count = 0;
     unsigned long edge_count = 0;
-    load_vertices(filename, true, vertices, vertices_r, vertice_count, edge_count);
 
+    boost::posix_time::ptime start = boost::posix_time::microsec_clock::local_time();
+    load_vertices(filename, true, vertices, vertices_r, vertice_count, edge_count);
+    boost::posix_time::ptime end = boost::posix_time::microsec_clock::local_time();
+    std::cout << "loaded " << vertices.size() << " vertices in " << (end-start).total_microseconds()/1000000. << " seconds" << std::endl;
+
+    start = boost::posix_time::microsec_clock::local_time();
     std::stack<unsigned long> topo = topological(vertices, vertice_count);
+    end = boost::posix_time::microsec_clock::local_time();
+    auto ostart = start;
+    std::cout << "found topological order in " << (end-start).total_microseconds()/1000000. << " seconds" << std::endl;
+
+    start = boost::posix_time::microsec_clock::local_time();
     auto strongs = findComponents(vertices_r, vertice_count, topo);
+    end = boost::posix_time::microsec_clock::local_time();
+    std::cout << "found components in " << (end-start).total_microseconds()/1000000. << " seconds" << std::endl;
+    std::cout << "total time: " << (end-ostart).total_microseconds()/1000000 << " seconds" << std::endl;
+
 
     std::cout << "grafen " << filename << " har " << strongs.size() << " sterkt sammenhengende komponenter." << std::endl;
     if (strongs.size() < 100){
