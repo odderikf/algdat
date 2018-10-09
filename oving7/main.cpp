@@ -9,7 +9,7 @@
 
 typedef std::vector<std::set<unsigned long>> Graph;
 
-std::stack<unsigned long> topological(std::vector<std::set<unsigned long>> vertices, unsigned long vertice_count){
+std::stack<unsigned long> topological(Graph vertices, unsigned long vertice_count){
 
     std::cout << ("finding topological") << std::endl;
     std::set<unsigned long> notfound;
@@ -54,7 +54,7 @@ std::stack<unsigned long> topological(std::vector<std::set<unsigned long>> verti
 }
 
 void load_vertices(const std::string &filename, bool get_r,
-        std::vector<std::set<unsigned long>> &vertices, std::vector<std::set<unsigned long>> &vertices_r
+        Graph &vertices, Graph &vertices_r
                 ,unsigned long &vertice_count, unsigned long &edge_count){
 
     std::cout << "reading file" << std::endl;
@@ -125,8 +125,8 @@ int main(int argc, char* argv[]) {
     if (argc > 1)
         filename = argv[1];
 
-    std::vector<std::set<unsigned long>> vertices;
-    std::vector<std::set<unsigned long>> vertices_r;
+    Graph vertices;
+    Graph vertices_r;
     unsigned long vertice_count = 0;
     unsigned long edge_count = 0;
 
