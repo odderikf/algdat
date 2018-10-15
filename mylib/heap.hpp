@@ -8,13 +8,26 @@ namespace my {
     template <typename T>
     class Heap {
     public:
-        Heap(std::vector<T> &vec);
+        static const bool MAX_HEAP = true;
+        static const bool MIN_HEAP = false;
+        bool max_or_min = MAX_HEAP;
+        Heap(std::vector<T> &, bool);
+        Heap(bool);
+        Heap(std::vector<T> &);
+        Heap();
         void fix(u_int64_t i);
+
         u_int64_t left(const u_int64_t &i) const;
         u_int64_t right(const u_int64_t &i) const;
+        u_int64_t parent(const u_int64_t &i) const;
         u_int64_t size;
         bool isleaf(const u_int64_t &i) const;
         T pop_max();
+        T pop_min();
+        T pop();
+        bool empty();
+        void emplace(T);
+        void shrink_to_fit();
     private:
         std::vector<T> &v;
     };
@@ -27,6 +40,9 @@ namespace my {
         }
     }
 
-#include "heap_impl.hpp"
+
+    #include "heap_impl.hpp"
 }
+
+
 #endif
