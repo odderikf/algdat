@@ -98,15 +98,12 @@ dijkstra(Graph &vertices, const unsigned long &start){
                 unsigned long altdist = v.distance + c.second; // distance to v + length of edge between c and v.
                 auto v2 = vertices[c.first];
                 if (altdist < distances[v2.index]) {
-                    if ( v2.index == 50 and v.index == 2248 )
-                        std::cout << "here" << std::endl;
                     distances[v2.index] = altdist;
                     ancestors[v2.index] = v.index;
                     Vertice newV = v2;
                     newV.distance = altdist;
                     stack.emplace(newV);
                     vertices[c.first].distance = altdist;
-
                 }
             }
         }
@@ -126,7 +123,7 @@ std::vector<unsigned long> getpath(std::vector<unsigned long> ancestors, Vertice
 
 int main(int argc, char* argv[]) {
 
-    std::string filename = "../graphs/vg4";
+    std::string filename = "../graphs/vgSkandinavia";
     if (argc > 1)
         filename = argv[1];
 
@@ -146,7 +143,7 @@ int main(int argc, char* argv[]) {
     auto ancestors = res.first;
     auto distances = res.second;
     end = boost::posix_time::microsec_clock::local_time();
-    std::cout << "found dijkstra ancestors in " << (end-start).total_microseconds()/1000000. << " seconds" << std::endl;
+    std::cout << "found dijkstra in " << (end-start).total_microseconds()/1000000. << " seconds" << std::endl;
 
     if (ancestors.size() < 10000000){
         std::string tab = "\t\t\t";
