@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <boost/date_time.hpp>
 
-typedef std::vector<std::set<unsigned long>> Graph;
+typedef std::vector<std::vector<unsigned long>> Graph;
 
 std::stack<unsigned long> topological(Graph vertices, unsigned long vertice_count){
 
@@ -31,10 +31,12 @@ std::stack<unsigned long> topological(Graph vertices, unsigned long vertice_coun
         if (not backtracking and pos == found.end()){
             notfound.erase(notfound.find(i));
             found.emplace(i);
-            std::set<unsigned long> children = vertices[i];
-            for(auto p = children.begin(); p != children.end(); p++){ // remove found children
+            std::vector<unsigned long> children = vertices[i];
+            bool pisfound = false;
+            for(auto p = children.begin(); p != children.end(); pisfound ? p = children.erase(p) : p++ ){ // remove found children
+                pisfound = false;
                 if (found.find(*p) != found.end()){
-                    children.erase(p);
+                    pisfound = true;
                 }
             }
             if(not children.empty()){
@@ -65,14 +67,14 @@ void load_vertices(const std::string &filename, bool get_r,
     vertices.reserve(static_cast<unsigned long>(vertice_count));
     vertices_r.reserve(static_cast<unsigned long>(vertice_count));
     for(unsigned long _ = 0; _ < vertice_count; _++){
-        vertices.emplace_back(std::set<unsigned long>());
-        if (get_r) vertices_r.emplace_back(std::set<unsigned long>());
+        vertices.emplace_back(std::vector<unsigned long>());
+        if (get_r) vertices_r.emplace_back(std::vector<unsigned long>());
     }
 
     unsigned long to, fro;
     while (file >> to >> fro) {
-        vertices[to].emplace(fro);
-        if (get_r) vertices_r[fro].emplace(to);
+        vertices[to].emplace_back(fro);
+        if (get_r) vertices_r[fro].emplace_back(to);
     }
     file.close();
 }
@@ -82,24 +84,24 @@ std::vector<std::vector<unsigned long>> findComponents(Graph vertices, unsigned 
     std::cout << "finding components" << std::endl;
     std::vector<unsigned long> nodecomp;
     nodecomp.reserve(static_cast<unsigned long>(vertice_count));
-    for(unsigned long _ = 0; _ < vertice_count; _++) nodecomp.emplace_back(-1);
+    for(unsigned long _ = 0; _ < vertice_count; _++) nodecomp.emplace_back(ULONG_MAX);
     unsigned long comp = 0;
 
     while (not order.empty()){
         unsigned long v = order.top();
         order.pop();
 
-        if (nodecomp[v] == -1){
-            std::set<unsigned long> children = vertices[v];
+        if (nodecomp[v] == ULONG_MAX){
+            std::vector<unsigned long> children = vertices[v];
             nodecomp[v] = comp;
             while (not children.empty()){
                 auto p = children.begin();
                 unsigned long c = *p;
                 children.erase(p);
-                if (nodecomp[c] == -1){
+                if (nodecomp[c] == ULONG_MAX){
                     nodecomp[c] = comp;
-                    std::set<unsigned long> subch = vertices[c];
-                    for (unsigned long i : subch) children.emplace(i);
+                    std::vector<unsigned long> subch = vertices[c];
+                    for (unsigned long i : subch) children.emplace_back(i);
 
                 }
             }
@@ -121,7 +123,7 @@ std::vector<std::vector<unsigned long>> findComponents(Graph vertices, unsigned 
 
 int main(int argc, char* argv[]) {
 
-    std::string filename = "L7g2";
+    std::string filename = "L7Skandinavia";
     if (argc > 1)
         filename = argv[1];
 
@@ -132,7 +134,7 @@ int main(int argc, char* argv[]) {
 
     boost::posix_time::ptime start = boost::posix_time::microsec_clock::local_time();
     load_vertices(filename, true, vertices, vertices_r, vertice_count, edge_count);
-    boost::posix_time::ptime end = boost::posix_time::microsec_clock::local_time();
+     boost::posix_time::ptime end = boost::posix_time::microsec_clock::local_time();
     std::cout << "loaded " << vertices.size() << " vertices in " << (end-start).total_microseconds()/1000000. << " seconds" << std::endl;
 
     start = boost::posix_time::microsec_clock::local_time();
