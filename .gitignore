@@ -17,10 +17,12 @@
 dump/
 # not programming
 oving6/
+oving12/test_out/*
+oving12/test_huff/*
+*.class
 
 
 #privacy reasons:
-
 oving5/names.txt
 
 #size reasons:
