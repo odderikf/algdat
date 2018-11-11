@@ -39,7 +39,7 @@ huffman_tree::huffman_tree(std::vector<uint64_t> counts){
 
     my::Heap<tree*> queue(temp, my::Heap<tree*>::MIN_HEAP, lessthan);
 
-    while (queue.size != 1){
+    while (queue.size > 1){
 
         tree *min1 = queue.pop_min();
         tree *min2 = queue.pop_min();
@@ -76,106 +76,4 @@ std::vector<bool> huffman_tree::findpath(const unsigned char &c){
     }
     std::reverse(decisions.begin(), decisions.end());
     return decisions;
-}
-
-void huffman_encode(const huffman_tree &huffman, std::ifstream &file_in, std::ofstream &file_out){
-    char buffer_read[BLOCK_SIZE];
-    char buffer_write[BLOCK_SIZE];
-    int write_index = 0;
-
-    char buffer_bool = 0;
-    char bool_index = 0;
-
-    file_in.clear();
-    file_in.seekg(0);
-
-    file_out.clear();
-    file_out.seekp(COUNTS_SIZE+1);
-
-    do{
-        file_in.read(buffer_read, BLOCK_SIZE);
-        std::cout << "read " << file_in.gcount() << " bytes" << std::endl;
-        for(int i = 0; i < file_in.gcount(); i++){
-            auto c  = static_cast<unsigned char>(buffer_read[i]);
-            auto decisions = huffman.paths[c];
-            for (bool d : decisions){
-                //std::cout << d << std::endl;
-                buffer_bool |= d << bool_index++;
-
-                if (bool_index == 8){
-                    buffer_write[write_index++] = buffer_bool;
-                    buffer_bool = bool_index = 0;
-
-                    if (write_index == BLOCK_SIZE){
-                        file_out.write(buffer_write, BLOCK_SIZE);
-                        std::cout << "wrote " << BLOCK_SIZE << " bytes" << std::endl;
-                        write_index = 0;
-                    }
-                }
-            }
-        }
-    } while (file_in.gcount() > 0);
-
-    buffer_write[write_index++] = buffer_bool;
-    file_out.write(buffer_write, write_index);
-
-    buffer_write[0] = bool_index; // lets me know how many bits to skip at end
-
-    file_out.clear();
-    file_out.seekp(COUNTS_SIZE);
-    file_out.write(buffer_write, 1);
-
-    std::cout << "wrote " << write_index << " bytes" << std::endl;
-}
-
-void huffman_decode(const huffman_tree &huffman, std::ifstream &file_in, std::ofstream &file_out){
-    char buffer_read[BLOCK_SIZE];
-    char buffer_write[BLOCK_SIZE];
-    int write_index = 0;
-
-    char buffer_bool = 0;
-
-    huffman_tree::tree *position = huffman.root;
-
-    file_in.seekg(COUNTS_SIZE);
-    file_in.clear();
-    file_in.read(buffer_read, 1);
-
-    char bits_to_skip = buffer_read[0];
-    signed int max_bit_index = 8;
-
-    do {
-        file_in.read(buffer_read, BLOCK_SIZE);
-        std::cout << "read " << file_in.gcount() << " bytes" << std::endl;
-        for(short i = 0; i <= file_in.gcount(); ++i){
-            buffer_bool = buffer_read[i];
-            if (file_in.eof() and i == file_in.gcount()){
-                max_bit_index -= static_cast<unsigned char>(bits_to_skip);
-            }
-            for(signed int j = 0; j < max_bit_index; ++j){
-                bool direction = static_cast<bool>((buffer_bool >> j) & 1);
-                //std::cout << direction << std::endl;
-                if ( direction == huffman_tree::LEFT){
-                    position = position->left;
-                } else if (direction == huffman_tree::RIGHT){
-                    position = position->right;
-                }
-
-                if (position->character != nullptr){
-                    buffer_write[write_index++] = *(position->character);
-                    position = huffman.root;
-
-                    if (write_index == BLOCK_SIZE) {
-                        file_out.write(buffer_write, BLOCK_SIZE);
-                        std::cout << "wrote " << BLOCK_SIZE << " bytes" << std::endl;
-                        write_index = 0;
-                    }
-                }
-
-            }
-        }
-    } while (not file_in.eof());
-
-    file_out.write(buffer_write, write_index);
-    std::cout << "wrote " << write_index << " bytes" << std::endl;
 }

@@ -43,7 +43,5 @@ public:
     };
 };
 
-void huffman_encode(const huffman_tree &, std::ifstream &, std::ofstream &);
-void huffman_decode(const huffman_tree &, std::ifstream &, std::ofstream &);
 
 #endif //OVING12_HUFFMAN_TREE_HPP

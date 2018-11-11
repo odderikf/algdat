@@ -17,4 +17,6 @@ const boost::filesystem::path test_huff("test_huff");
 const boost::filesystem::path huff("huff");
 const boost::filesystem::path dot(".");
 
+const bool verbose = false;
+
 #endif //OVING12_CONSTANTS_HPP

@@ -10,8 +10,8 @@ add_executable(compress compress.cpp)
 add_executable(decompress decompress.cpp)
 add_executable(t test.cpp)
 
-target_compile_options(compress PRIVATE -lboost_filesystem -lboost_system -Wall -Wextra -pedantic -Werror -Wno-reorder -Wno-unused)
-target_compile_options(decompress PRIVATE -lboost_filesystem -lboost_system -Wall -Wextra -pedantic -Werror -Wno-reorder -Wno-unused)
+target_compile_options(compress PRIVATE -lboost_filesystem -lboost_system -O3 -Wall -Wextra -pedantic -Werror -Wno-reorder -Wno-unused)
+target_compile_options(decompress PRIVATE -lboost_filesystem -lboost_system -O3 -Wall -Wextra -pedantic -Werror -Wno-reorder -Wno-unused)
 
 target_link_libraries(compress
         ${Boost_FILESYSTEM_LIBRARY}
