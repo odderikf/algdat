@@ -7,10 +7,7 @@
 #include <iostream>
 #include "huffman_tree.hpp"
 #include "../mylib/heap.hpp"
-
-const int BYTE_SIZE = 256;
-const int BLOCK_SIZE = 4096;
-const int COUNTS_SIZE = 2048;
+#include "constants.hpp"
 
 huffman_tree::huffman_tree(std::vector<uint64_t> counts){
 
@@ -123,6 +120,8 @@ void huffman_encode(const huffman_tree &huffman, std::ifstream &file_in, std::of
     file_out.write(buffer_write, write_index);
 
     buffer_write[0] = bool_index; // lets me know how many bits to skip at end
+
+    file_out.clear();
     file_out.seekp(COUNTS_SIZE);
     file_out.write(buffer_write, 1);
 
@@ -144,8 +143,7 @@ void huffman_decode(const huffman_tree &huffman, std::ifstream &file_in, std::of
 
     char bits_to_skip = buffer_read[0];
     signed int max_bit_index = 8;
-    
-    uint64_t count_of_pos_finds = 0;
+
     do {
         file_in.read(buffer_read, BLOCK_SIZE);
         std::cout << "read " << file_in.gcount() << " bytes" << std::endl;
@@ -166,7 +164,6 @@ void huffman_decode(const huffman_tree &huffman, std::ifstream &file_in, std::of
                 if (position->character != nullptr){
                     buffer_write[write_index++] = *(position->character);
                     position = huffman.root;
-                    count_of_pos_finds++;
 
                     if (write_index == BLOCK_SIZE) {
                         file_out.write(buffer_write, BLOCK_SIZE);
@@ -177,8 +174,8 @@ void huffman_decode(const huffman_tree &huffman, std::ifstream &file_in, std::of
 
             }
         }
-    } while (file_in.gcount() > 0);
+    } while (not file_in.eof());
 
-    file_out.write(buffer_write, write_index); //
+    file_out.write(buffer_write, write_index);
     std::cout << "wrote " << write_index << " bytes" << std::endl;
 }

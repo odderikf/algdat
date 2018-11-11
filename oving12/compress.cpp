@@ -4,18 +4,9 @@
 #include <fstream>
 #include <vector>
 #include <boost/shared_ptr.hpp>
-#include "huffman_tree.hpp"
 #include <boost/filesystem.hpp>
-
-const int BYTE_SIZE = 256;
-const int BLOCK_SIZE = 4096;
-const int COUNTS_SIZE = 2048;
-
-const boost::filesystem::path test_in("test_in");
-const boost::filesystem::path test_out("test_out");
-const boost::filesystem::path test_huff("test_huff");
-const boost::filesystem::path huff("huff");
-const boost::filesystem::path dot(".");
+#include "huffman_tree.hpp"
+#include "constants.hpp"
 
 std::vector<uint64_t> count(std::ifstream &file_in, std::ofstream &file_out){
 
@@ -58,7 +49,7 @@ std::vector<uint64_t> count(std::ifstream &file_in, std::ofstream &file_out){
 }
 
 int main(int argc, char *argv[]) {
-    auto filename_in = test_in / boost::filesystem::path("diverse.txt");
+    auto filename_in = test_in / boost::filesystem::path("opg12.tex");
     if(argc > 1) filename_in = argv[1];
 
     auto file_part = filename_in.stem();

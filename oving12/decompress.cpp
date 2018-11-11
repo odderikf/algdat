@@ -5,14 +5,7 @@
 #include <vector>
 #include "huffman_tree.hpp"
 #include <boost/filesystem.hpp>
-
-const int BYTE_SIZE = 256;
-const int BLOCK_SIZE = 4096;
-
-const boost::filesystem::path test_in("test_in");
-const boost::filesystem::path test_out("test_out");
-const boost::filesystem::path test_huff("test_huff");
-const boost::filesystem::path huff("huff");
+#include "constants.hpp"
 
 std::vector<uint64_t> count(std::ifstream &file){
 
@@ -42,7 +35,7 @@ std::vector<uint64_t> count(std::ifstream &file){
 }
 
 int main(int argc, char *argv[]) {
-    auto filename_in = test_huff / boost::filesystem::path("ø.txt.huff");
+    auto filename_in = test_huff / boost::filesystem::path("opg12.tex.huff");
     if(argc > 1) filename_in = argv[1];
 
     auto file_part = filename_in.stem();

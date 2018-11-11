@@ -4,6 +4,8 @@
 
 #include <vector>
 #include <algorithm>
+#include <cassert>
+
 namespace my {
     template <typename T>
     class Heap {
@@ -11,6 +13,8 @@ namespace my {
         static const bool MAX_HEAP = true;
         static const bool MIN_HEAP = false;
         bool max_or_min = MAX_HEAP;
+
+        Heap(std::vector<T> &, bool, std::function<bool(const T&, const T&)>);
         Heap(std::vector<T> &, bool);
         Heap(bool);
         Heap(std::vector<T> &);
@@ -28,6 +32,11 @@ namespace my {
         bool empty();
         void emplace(T);
         void shrink_to_fit();
+
+        std::function<bool(const T &, const T &)> lessthan;
+
+        void reserve( u_int64_t );
+
     private:
         std::vector<T> &v;
     };

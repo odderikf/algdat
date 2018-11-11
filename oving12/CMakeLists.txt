@@ -24,5 +24,7 @@ target_link_libraries(decompress
         huffman_tree
 )
 target_link_libraries(t
+        ${Boost_FILESYSTEM_LIBRARY}
+        ${Boost_SYSTEM_LIBRARY}
         huffman_tree
         )

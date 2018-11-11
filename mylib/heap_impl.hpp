@@ -1,6 +1,19 @@
 
+template <typename T>
+Heap<T>::Heap(std::vector<T> &vec, bool m, std::function<bool(const T&, const T&)> f)
+ : v(vec), size(vec.size()), max_or_min(m), lessthan(f) {
+    if (size>1){
+        for(int64_t i = (size-2)/2; i >= 0; i--){
+            fix(i);
+        }
+    }
+}
+
 template<typename T>
 Heap<T>::Heap(std::vector<T> &vec) : v(vec), size(vec.size()), max_or_min(MAX_HEAP) {
+    lessthan = [](const T &t1, const T &t2){
+        return t1 < t2;
+    };
     if (size>1) {
         for (int64_t i = (size - 2) / 2; i >= 0; i--) {
             fix(i);
@@ -9,50 +22,56 @@ Heap<T>::Heap(std::vector<T> &vec) : v(vec), size(vec.size()), max_or_min(MAX_HE
 }
 template<typename T>
 Heap<T>::Heap(std::vector<T> &vec, bool m) : v(vec), size(vec.size()), max_or_min(m) {
-    if (size>1)
-    for(int64_t i = (size-2)/2; i >= 0; i--){
-        fix(i);
+    lessthan = [](const T &t1, const T &t2){
+        return t1 < t2;
+    };
+    if (size>1){
+        for(int64_t i = (size-2)/2; i >= 0; i--){
+            fix(i);
+        }
     }
+}
+
+template <typename T>
+Heap<T>::Heap(bool m) : v(std::vector<T>(0)), size(v.size()), max_or_min(m){
+    lessthan = [](const T &t1, const T &t2){
+        return t1 < t2;
+    };
+}
+template <typename T>
+Heap<T>::Heap() : v(std::vector<T>(0)), size(v.size()), max_or_min(MAX_HEAP){
+    lessthan = [](const T &t1, const T &t2){
+        return t1 < t2;
+    };
 }
 
 template<typename T>
 void Heap<T>::fix(u_int64_t n) {
     if (n >= size) return;
     if (max_or_min == MAX_HEAP) {
-        u_int64_t max = n, l = left(n), r = right(n), p = parent(n);
-        if (p != UINT64_MAX and v[p] > v[n]){
-            std::swap(v[p], v[n]);
-            return fix(p);
-        } else {
-            if (l < size) {
-                if (v[l] > v[max]) max = l;
+        u_int64_t max = n, l = left(n), r = right(n);
+        if (l < size) {
+            if (lessthan(v[max], v[l])) max = l;
 
-                if (r < size) {
-                    if (v[r] > v[max]) max = r;
-                }
-                if (max != n) {
-                    std::swap(v[max], v[n]);
-                    return fix(max);
-                }
-
+            if (r < size) {
+                if (lessthan(v[max], v[r])) max = r;
+            }
+            if (max != n) {
+                std::swap(v[max], v[n]);
+                return fix(max);
             }
         }
     } else {
-        u_int64_t min = n, l = left(n), r = right(n), p = parent(n);
-        if (p != UINT64_MAX and v[p] > v[n]) {
-            std::swap(v[n], v[p]);
-            return fix(p);
-        } else {
-            if (l < size) {
-                if (v[l] < v[min]) min = l;
+        u_int64_t min = n, l = left(n), r = right(n);
+        if (l < size) {
+            if (lessthan(v[l], v[min])) min = l;
 
-                if (r < size) {
-                    if (v[r] < v[min]) min = r;
-                }
-                if (min != n) {
-                    std::swap(v[min], v[n]);
-                    return fix(min);
-                }
+            if (r < size) {
+                if (lessthan(v[r], v[min])) min = r;
+            }
+            if (min != n) {
+                std::swap(v[min], v[n]);
+                return fix(min);
             }
         }
     }
@@ -111,11 +130,27 @@ void Heap<T>::emplace(T t){
     if (size < v.size() and size > 0) {
         v.emplace_back(t);
         std::swap(v[size], v[v.size()-1]);
+    } else if (size < v.size()) {
+        v.insert(v.begin(), t);
     } else {
         v.emplace_back(t);
     }
     size++;
-    fix(size-1);
+    u_int64_t n = size-1;
+    u_int64_t p = parent(n);
+    if (max_or_min == MAX_HEAP){
+        while (p != UINT64_MAX and lessthan(v[p], v[n])){
+            std::swap(v[n], v[p]);
+            n = p;
+            p = parent(n);
+        }
+    } else {
+        while (p != UINT64_MAX and p < n and lessthan(v[n], v[p])){
+            std::swap(v[n], v[p]);
+            n = p;
+            p = parent(n);
+        }
+    }
 }
 
 template <typename T>
@@ -124,4 +159,9 @@ void Heap<T>::shrink_to_fit() {
         v.pop_back();
     }
     v.shrink_to_fit();
+}
+
+template <typename T>
+void Heap<T>::reserve(u_int64_t s){
+    v.reserve(s);
 }
