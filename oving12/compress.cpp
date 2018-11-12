@@ -8,10 +8,12 @@
 #include "huffman_tree.hpp"
 #include "constants.hpp"
 
+long COUNTS_SIZE;
+
 std::vector<uint64_t> count(std::ifstream &file_in, std::ofstream &file_out){
 
-    file_in.seekg(0);
     file_in.clear();
+    file_in.seekg(0);
 
     std::vector<uint64_t> counts;
     counts.reserve(BYTE_SIZE);
@@ -26,23 +28,31 @@ std::vector<uint64_t> count(std::ifstream &file_in, std::ofstream &file_out){
         counts[static_cast<unsigned char>(c)]++;
     }
 
+    file_in.clear();
+    long bytecount_ending = file_in.tellg() & 0xFF;
+
+    c = static_cast<char>(bytecount_ending);
+    file_out.put(c);
+
     for(unsigned int i = 0; i < BYTE_SIZE; ++i){
         uint64_t val = counts[i];
         unsigned int size = 0;
-        for(unsigned int j = 1; i < 9; i++){
-            if( val & 0xF << j) size = j; // find largest non-zero byte
+        for(unsigned int j = 1; j < 9; j++){
+            if( (val & (0xFF << 8*j)) != 0) size = j; // find largest non-zero byte todo WORK
         }
-
         if(val > VAL_SIZE) VAL_SIZE = size;
     }
 
-    //file_out.put(static_cast<char>(VAL_SIZE));
+    VAL_SIZE = 8;
+    file_out.put(static_cast<char>(VAL_SIZE));
 
     for(uint64_t i : counts){
-        for(uint64_t j = 7/*VAL_SIZE-1*/; j != UINT64_MAX; j--){ // from 7 to 0, except you might get to store less than 8 bytes per value
+        for(uint64_t j = 0; j < VAL_SIZE; j++){ // from 7 to 0, except you might get to store less than 8 bytes per value
             file_out.put(static_cast<char>((i & (0xFF << 8*j) ) >> 8*j));
         }
     }
+
+    COUNTS_SIZE = file_out.tellp();
 
     return counts;
 }
@@ -55,11 +65,8 @@ void huffman_encode(const huffman_tree &huffman, std::ifstream &file_in, std::of
     char buffer_bool = 0;
     char bit_index = 0;
 
-    file_in.clear();
-    file_in.seekg(0);
-
     file_out.clear();
-    file_out.seekp(COUNTS_SIZE+1);
+    file_out.seekp(COUNTS_SIZE);
 
     do{
         file_in.read(buffer_read, BLOCK_SIZE);
@@ -87,16 +94,6 @@ void huffman_encode(const huffman_tree &huffman, std::ifstream &file_in, std::of
 
     buffer_write[write_index++] = buffer_bool;
     file_out.write(buffer_write, write_index);
-
-    file_out.clear();
-    file_out.seekp(COUNTS_SIZE);
-    //file_out.put(bit_index);
-    file_in.seekg(0, std::ios::end);
-    file_in.clear();
-    long bytecount_ending = file_in.tellg() & 0xFF;
-
-    char c = static_cast<char>(bytecount_ending);
-    file_out.put(c);
 
     if (verbose) std::cout << "wrote " << write_index+1 << " bytes" << std::endl; // +1 because put
 }

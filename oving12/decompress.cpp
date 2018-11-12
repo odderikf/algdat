@@ -7,27 +7,30 @@
 #include <boost/filesystem.hpp>
 #include "constants.hpp"
 
+long COUNTS_SIZE;
 std::vector<uint64_t> count(std::ifstream &file){
 
     std::vector<uint64_t> counts;
     counts.reserve(BYTE_SIZE);
 
-    char buffer[2048];
+    char buffer[2049]; // worst case size
     int index = 0;
 
-    file.read(buffer, 2048);
-    int VAL_SIZE = 8;//static_cast<int>(static_cast<unsigned char>(buffer[0]));
+    file.read(buffer, 2049);
+    int VAL_SIZE = static_cast<int>(static_cast<unsigned char>(buffer[index++]));
 
     if (verbose) std::cout << "read " << file.gcount() << " bytes" << std::endl;
     auto *ubuffer = reinterpret_cast<unsigned char *>(buffer);
-    for (int counter = 0; counter < VAL_SIZE*32; counter++){
+    //std::cerr << VAL_SIZE << " " << VAL_SIZE*32 << std::endl;
+    for (int counter = 0; counter < BYTE_SIZE; counter++){
         uint64_t next = 0;
-        for(int i = VAL_SIZE-1; i >= 0; i--){
+        for(int i = 0; i < VAL_SIZE; i++){
             next |=  static_cast<uint64_t>(ubuffer[index++]) << (i*8);
         }
 
         counts.emplace_back(next);
     }
+    COUNTS_SIZE = index;
 
     return counts;
 }
@@ -41,13 +44,9 @@ void huffman_decode(const huffman_tree &huffman, std::ifstream &file_in, std::of
 
     huffman_tree::tree *position = huffman.root;
 
-    file_in.seekg(COUNTS_SIZE);
+    file_in.seekg(COUNTS_SIZE-1);
     file_in.clear();
 
-    //file_in.read(buffer_read, 1);
-
-    //char bits_to_skip = buffer_read[0];
-    //signed int max_bit_index = 8;
     char temp;
     file_in.get(temp);
     long bytecount_ending = static_cast<long>(static_cast<unsigned char>(temp));

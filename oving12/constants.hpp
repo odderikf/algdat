@@ -9,7 +9,6 @@
 
 const int BYTE_SIZE = 256;
 const int BLOCK_SIZE = 8192;
-const int COUNTS_SIZE = 2048;
 
 const boost::filesystem::path test_in("test_in");
 const boost::filesystem::path test_out("test_out");

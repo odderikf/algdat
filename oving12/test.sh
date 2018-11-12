@@ -13,6 +13,8 @@ do
     cmake/compress ${file} test_huff > /dev/null
 done
 
+echo ""
+
 for file in test_huff/*
 do
     cmake/decompress ${file} test_out > /dev/null
