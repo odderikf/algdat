@@ -4,6 +4,8 @@
 #include <functional>
 #include "graph.hpp"
 
-std::pair<std::vector<unsigned long>, unsigned long> dijkstra(Graph &vertices, const unsigned long &start, const unsigned long &goal, const std::function<double(const Edge &)> &distance);
+void dijkstra(Graph &vertices, const unsigned long &start, const unsigned long &goal,
+                const std::function<double(const Edge &)> &distance_function,
+                 std::vector<unsigned long> &path, double &distance, unsigned long &pop_count);
 
 #endif

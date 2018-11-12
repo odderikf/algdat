@@ -25,9 +25,9 @@ struct Vertice {
     double coslng; // as cos of radians
 
     Vertice(unsigned long index, double lat, double lng);
-
-    static double haversine(Vertice from, Vertice to);
 };
+
+double haversine(Vertice from, Vertice to);
 
 typedef std::vector<Vertice> Graph;
 
