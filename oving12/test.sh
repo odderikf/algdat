@@ -10,6 +10,7 @@ rm test_huff/* test_out/*
 
 for file in test_in/*
 do
+    echo ${file}
     cmake/compress ${file} test_huff > /dev/null
 done
 
@@ -17,6 +18,7 @@ echo ""
 
 for file in test_huff/*
 do
+    echo ${file}
     cmake/decompress ${file} test_out > /dev/null
 done
 

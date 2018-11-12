@@ -15,13 +15,14 @@ std::vector<uint64_t> count(std::ifstream &file_in, std::ofstream &file_out){
     file_in.clear();
     file_in.seekg(0);
 
+    file_out.clear();
+    file_out.seekp(0);
+
     std::vector<uint64_t> counts;
     counts.reserve(BYTE_SIZE);
     for (int i = 0; i < BYTE_SIZE; ++i) {
         counts.emplace_back(0);
     }
-
-    unsigned int VAL_SIZE = 0; // largest nonzero bit-octuple in counts.
 
     char c;
     while (file_in.get(c)) {
@@ -29,30 +30,30 @@ std::vector<uint64_t> count(std::ifstream &file_in, std::ofstream &file_out){
     }
 
     file_in.clear();
-    long bytecount_ending = file_in.tellg() & 0xFF;
+    unsigned long bytecount_ending = file_in.tellg() & 0xFF;
 
     c = static_cast<char>(bytecount_ending);
     file_out.put(c);
 
-    for(unsigned int i = 0; i < BYTE_SIZE; ++i){
-        uint64_t val = counts[i];
-        unsigned int size = 0;
-        for(unsigned int j = 1; j < 9; j++){
-            if( (val & (0xFF << 8*j)) != 0) size = j; // find largest non-zero byte todo WORK
-        }
-        if(val > VAL_SIZE) VAL_SIZE = size;
-    }
+    file_in.clear();
+    file_in.seekg(0);
 
-    VAL_SIZE = 8;
+    unsigned int VAL_SIZE = 0; // largest nonzero sub-byte in counts.
+
+    uint64_t val = *std::max_element(counts.begin(), counts.end()); // biggest value in counts
+
+    for(unsigned int j = 0; j < 8; j++) {
+        if ((val & (0xFF << (8 * j))) != 0) VAL_SIZE = j + 1; // find largest non-zero byte
+    }
     file_out.put(static_cast<char>(VAL_SIZE));
 
     for(uint64_t i : counts){
-        for(uint64_t j = 0; j < VAL_SIZE; j++){ // from 7 to 0, except you might get to store less than 8 bytes per value
+        for(uint64_t j = 0; j < VAL_SIZE; j++){
             file_out.put(static_cast<char>((i & (0xFF << 8*j) ) >> 8*j));
         }
     }
 
-    COUNTS_SIZE = file_out.tellp();
+    COUNTS_SIZE = 2 + VAL_SIZE*BYTE_SIZE; // 1 for ending + 1 for size + 256 frequencies * VAL_SIZE bytes per frequency
 
     return counts;
 }

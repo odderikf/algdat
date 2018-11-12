@@ -8,29 +8,36 @@
 #include "constants.hpp"
 
 long COUNTS_SIZE;
+unsigned int VAL_SIZE;
+unsigned long bytecount_ending;
+
 std::vector<uint64_t> count(std::ifstream &file){
 
     std::vector<uint64_t> counts;
     counts.reserve(BYTE_SIZE);
 
-    char buffer[2049]; // worst case size
+    char buffer[2050]; // worst case size
     int index = 0;
 
-    file.read(buffer, 2049);
-    int VAL_SIZE = static_cast<int>(static_cast<unsigned char>(buffer[index++]));
+    file.read(buffer, 2050);
+
+    bytecount_ending = static_cast<unsigned long>(static_cast<unsigned char>(buffer[index++]));
+
+    VAL_SIZE = static_cast<unsigned int>(static_cast<unsigned char>(buffer[index++]));
 
     if (verbose) std::cout << "read " << file.gcount() << " bytes" << std::endl;
+
     auto *ubuffer = reinterpret_cast<unsigned char *>(buffer);
-    //std::cerr << VAL_SIZE << " " << VAL_SIZE*32 << std::endl;
+
     for (int counter = 0; counter < BYTE_SIZE; counter++){
         uint64_t next = 0;
-        for(int i = 0; i < VAL_SIZE; i++){
+        for(unsigned int i = 0; i < VAL_SIZE; i++){
             next |=  static_cast<uint64_t>(ubuffer[index++]) << (i*8);
         }
 
         counts.emplace_back(next);
     }
-    COUNTS_SIZE = index;
+    COUNTS_SIZE = 2 + VAL_SIZE*BYTE_SIZE;
 
     return counts;
 }
@@ -44,12 +51,8 @@ void huffman_decode(const huffman_tree &huffman, std::ifstream &file_in, std::of
 
     huffman_tree::tree *position = huffman.root;
 
-    file_in.seekg(COUNTS_SIZE-1);
+    file_in.seekg(COUNTS_SIZE);
     file_in.clear();
-
-    char temp;
-    file_in.get(temp);
-    long bytecount_ending = static_cast<long>(static_cast<unsigned char>(temp));
 
     while(file_in.get(buffer_bool)) {
         /*if (file_in.eof() and i == file_in.gcount()){ // todo make this work :&
@@ -69,7 +72,7 @@ void huffman_decode(const huffman_tree &huffman, std::ifstream &file_in, std::of
 
                 if (write_index == BLOCK_SIZE) {
 
-                    while (bytecount_ending != (( (int)file_out.tellp() + write_index ) & 0xFF) ){
+                    while (file_in.eof() and bytecount_ending != (( (long)file_out.tellp() + write_index ) & 0xFF) ){
                         write_index--;
                         // hack to fix bug caused by a byte having garbage data at end
                         // should ideally be fixed by saving the amount of bits that do not count
@@ -84,8 +87,8 @@ void huffman_decode(const huffman_tree &huffman, std::ifstream &file_in, std::of
         }
     }
 
-
-    while (bytecount_ending != (( (int)file_out.tellp() + write_index ) & 0xFF) ){
+    while (bytecount_ending != (( (unsigned int)file_out.tellp() + write_index ) & 0xFF) ){
+        std::cerr << write_index << '\r';
         write_index--; // hack to fix bug, see above
     }
     file_out.write(buffer_write, write_index);
@@ -93,7 +96,7 @@ void huffman_decode(const huffman_tree &huffman, std::ifstream &file_in, std::of
 }
 
 int main(int argc, char *argv[]) {
-    auto filename_in = test_huff / boost::filesystem::path("compress.cpp.huff");
+    auto filename_in = test_huff / boost::filesystem::path("opg12.pdf.huff");
     if(argc > 1) filename_in = argv[1];
 
     auto file_part = filename_in.stem();
