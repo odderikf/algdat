@@ -8,6 +8,7 @@
 #include <functional>
 
 namespace my {
+
     template <typename T>
     class Heap {
     public:
@@ -18,6 +19,7 @@ namespace my {
         Heap(std::vector<T> &, bool, std::function<bool(const T&, const T&)>);
         Heap(std::vector<T> &, bool);
         Heap(bool);
+        Heap(bool, std::function<bool(const T&, const T&)>);
         Heap(std::vector<T> &);
         Heap();
         void fix(u_int64_t i);
@@ -50,6 +52,13 @@ namespace my {
         }
     }
 
+    template<typename T>
+    void heapsort(std::vector<T> *vector, std::function<bool(const T &, const T &)> lessthan){
+        my::Heap<T> h = my::Heap<T>(*vector, lessthan);
+        while(not h.isleaf(0)){
+            h.pop_max();
+        }
+    }
 
     #include "heap_impl.hpp"
 }

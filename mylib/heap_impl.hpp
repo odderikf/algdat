@@ -38,6 +38,11 @@ Heap<T>::Heap(bool m) : v(std::vector<T>(0)), size(v.size()), max_or_min(m){
         return t1 < t2;
     };
 }
+
+template <typename T>
+Heap<T>::Heap(bool m,  std::function<bool(const T&, const T&)> f)
+: v(std::vector<T>(0)), size(v.size()), max_or_min(m), lessthan(f){}
+
 template <typename T>
 Heap<T>::Heap() : v(std::vector<T>(0)), size(v.size()), max_or_min(MAX_HEAP){
     lessthan = [](const T &t1, const T &t2){
