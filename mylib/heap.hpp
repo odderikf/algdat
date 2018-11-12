@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <functional>
 
 namespace my {
     template <typename T>
