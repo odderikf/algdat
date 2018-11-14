@@ -10,11 +10,11 @@ Vertice::Vertice(unsigned long index, double lat, double lng) : index(index), la
 }
 
 double haversine(Vertice from, Vertice to) {
-    double r =  6371; //km
+    double r =  6371000; //m
     double first_middle = std::pow( std::sin( (from.radlat - to.radlat)/2 ) , 2 );
     double second_middle = from.coslat*to.coslat*std::pow( std::sin( (from.radlng - to.radlng)/2 ) , 2);
     return 2*r*std::asin( std::sqrt( first_middle + second_middle ) );
 }
 
-Edge::Edge(unsigned long from, unsigned long to, unsigned long time, unsigned long length, unsigned long speed)
-: from(from), to(to), time(time), length(length), speed(speed){}
+Edge::Edge(unsigned long from, unsigned long to, unsigned long time, unsigned long length)
+: from(from), to(to), time(time), length(length){}

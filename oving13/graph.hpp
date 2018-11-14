@@ -8,10 +8,9 @@
 struct Edge {
     unsigned long from;
     unsigned long to;
-    unsigned long time;
-    unsigned long length;
-    unsigned long speed;
-    Edge(unsigned long from, unsigned long to, unsigned long time, unsigned long length, unsigned long speed);
+    double time;
+    double length;
+    Edge(unsigned long from, unsigned long to, unsigned long time, unsigned long length);
 };
 
 struct Vertice {
