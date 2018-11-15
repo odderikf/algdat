@@ -3,7 +3,8 @@
 #include <chrono>
 #include <sstream>
 
-#include "astar.hpp"
+#include "astar_s.hpp"
+#include "dijkstra_s.hpp"
 #include "graph.hpp"
 #include "../mylib/heap.hpp"
 
@@ -100,9 +101,7 @@ int main(){
         std::vector<unsigned long> path_dijkstra;
 
         auto begin_dijkstra = std::chrono::high_resolution_clock::now();
-        //dijkstra(vertices, START, GOAL, distance_function, path_dijkstra, distance_dijkstra, pop_count_dijkstra);
-        astar(vertices, point.from, point.to, distance_function,
-                [](const unsigned long &, const unsigned long &){return 0;},
+        dijkstra(vertices, point.from, point.to,
                 path_dijkstra, distance_dijkstra, pop_count_dijkstra);
         auto end_dijkstra = std::chrono::high_resolution_clock::now();
 
@@ -122,8 +121,7 @@ int main(){
         std::vector<unsigned long> path_astar;
 
         auto begin_astar = std::chrono::high_resolution_clock::now();
-        astar(vertices, point.from, point.to, distance_function,
-                distance_estimate,
+        astar(vertices, point.from, point.to,
                 path_astar, distance_astar, pop_count_astar);
         auto end_astar = std::chrono::high_resolution_clock::now();
 
