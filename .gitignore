@@ -5,7 +5,11 @@
 */__pycache__/
 *.gch
 *.o
+*.class
 
+oving13/points/*
+oving12/test_out/*
+oving12/test_huff/*
 
 # ide artifacts:
 
@@ -15,16 +19,16 @@
 # non-content:
 
 dump/
+*/venv/
+
+
 # not programming
 oving6/
-oving12/test_out/*
-oving12/test_huff/*
-*.class
-oving13/points/*
 
 
 #privacy reasons:
 oving5/names.txt
+
 
 #size reasons:
 oving7/L7Skandinavia

@@ -8,7 +8,7 @@
 struct Edge {
     unsigned long from;
     unsigned long to;
-    double time;
+    unsigned long time;
     double length;
     Edge(unsigned long from, unsigned long to, unsigned long time, unsigned long length);
 };
@@ -21,12 +21,11 @@ struct Vertice {
     double radlat; // as radians
     double radlng; // as radians
     double coslat; // as cos of radians
-    double coslng; // as cos of radians
 
     Vertice(unsigned long index, double lat, double lng);
 };
 
-double haversine(Vertice from, Vertice to);
+double haversine(const Vertice &from, const Vertice &to);
 
 typedef std::vector<Vertice> Graph;
 
