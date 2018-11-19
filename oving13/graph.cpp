@@ -1,11 +1,13 @@
 #include "graph.hpp"
 #include <climits>
 #include <cmath>
+#include <cfloat>
 
 Vertice::Vertice(unsigned long index, double lat, double lng) : index(index), lat(lat), lng(lng) {
     radlat = lat * M_PI / 180;
     radlng = lng * M_PI / 180;
     coslat = std::cos(radlat);
+    haversine = DBL_MAX;
 }
 
 double haversine(const Vertice &from, const Vertice &to) {

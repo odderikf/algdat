@@ -9,18 +9,20 @@ void astar(const Graph &vertices, const unsigned long &start, const unsigned lon
 
     pop_count = 0;
     std::vector<double> distances(vertices.size(), DBL_MAX);
+    std::vector<double> haversines(vertices.size(), DBL_MAX);
     std::vector<unsigned long> ancestors(vertices.size(), ULONG_MAX);
     std::vector<bool> found(vertices.size(), false);
     std::vector<unsigned long> internal;
     internal.reserve( vertices.size()/2 );
 
     distances[start] = 0;
+    haversines[start] = haversine(vertices[start], vertices[goal]);
 
     internal.emplace_back(start);
 
     std::function<bool(const unsigned long &, const unsigned long &)> lessthan;
-    lessthan = [ &distances, &vertices, &goal](const unsigned long &v1, const unsigned long &v2){
-        return distances[v1] + haversine(vertices[v1], vertices[goal]) * (3.69609856)  < distances[v2] + haversine(vertices[v2], vertices[goal]) * (3.69609856);
+    lessthan = [ &distances, &haversines, &vertices, &goal](const unsigned long &v1, const unsigned long &v2){
+        return distances[v1] + haversines[v1] < distances[v2] + haversines[v2];
     };
 
     my::Heap<unsigned long> stack(internal, my::Heap<unsigned long>::MIN_HEAP, lessthan);
@@ -38,9 +40,11 @@ void astar(const Graph &vertices, const unsigned long &start, const unsigned lon
             if (altdist < distances[v2]) {
                 distances[v2] = altdist;
                 ancestors[v2] = v;
+                haversines[v2] = haversine(vertices[v2], vertices[goal]) * (3.69609856);
                 stack.emplace(v2);
             }
             else if (not found[v2]) {
+                haversines[v2] = haversine(vertices[v2], vertices[goal]) * (3.69609856);
                 stack.emplace(v2);
             }
         }

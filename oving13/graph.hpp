@@ -21,6 +21,7 @@ struct Vertice {
     double radlat; // as radians
     double radlng; // as radians
     double coslat; // as cos of radians
+    double haversine;
 
     Vertice(unsigned long index, double lat, double lng);
 };
